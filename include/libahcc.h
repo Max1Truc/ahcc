@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <set>
 
 int compress(std::ifstream &input, std::ofstream &output);
 
