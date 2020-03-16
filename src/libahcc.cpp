@@ -16,7 +16,7 @@ int compress(std::ifstream &input, std::ofstream &output) {
         int input_size = input.tellg();
         input.seekg(0, std::ios::beg);
 
-        output << "AHCC";
+        output << "AHCC0";
 
         std::set<char> usedchars;
         char tempchar;
@@ -31,7 +31,15 @@ int compress(std::ifstream &input, std::ofstream &output) {
         for (std::set<char>::iterator it = usedchars.begin(); it != usedchars.end(); ++it) {
                 output << *it;
         }
-        output << "\0\0";
+        output.write("\0", sizeof(char*));
+
+        int sum = 1;
+
+        if (usedchars.size() == 1) {
+          // Only one character, we simply write the number of times it does appear
+          output.write(reinterpret_cast<const char *>(&sum), sizeof(sum));
+          return 0;
+        }
 
         int pos = find_char_pos_in_set(usedchars, ',');
         std::cout << pos << std::endl;
@@ -50,7 +58,7 @@ int uncompress(std::ifstream &input, std::ofstream &output) {
         for (int i = 0; i < input_size; i++) {
                 input.get(tempchar);
                 if (i < 4) {
-                        if ("AHCC"[i] != tempchar) {
+                        if ("AHCC0"[i] != tempchar) {
                                 std::cerr << "Invalid or corrupted input file!" << std::endl;
                                 return 1;
                         }
